@@ -15,6 +15,7 @@ abstract class BaseFragment<vb: ViewBinding>(
     protected val binding get() = _binding!!
 
     protected abstract fun initView()
+    protected abstract fun obverseLiveData()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,6 +29,7 @@ abstract class BaseFragment<vb: ViewBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        obverseLiveData()
     }
 
     override fun onDestroyView() {
