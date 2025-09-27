@@ -82,5 +82,8 @@
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="bg_level_0">#001a23</color>
+    <color name="bg_green_opacity_30">#A02DB270</color>
+    <color name="bg_media_controller">#E2000000</color>
 
 </resources>

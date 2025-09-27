@@ -89,7 +89,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
                         binding.incMusicController.btnPlay.setImageResource(R.drawable.ic_control_play)
                         stopSeekBarUpdate()
                         binding.incMusicController.seekBar.progress = 0
-                        binding.incMusicController.tvSongTimer.text = "0:00"
+                        binding.incMusicController.tvSongTimer.text = "00:00"
                     }
 
                     Player.STATE_BUFFERING -> {
@@ -175,7 +175,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
     }
 
     private fun startSeekBarUpdate() {
-        stopSeekBarUpdate() // Ensure no duplicate runnables
+        stopSeekBarUpdate()
 
         updateSeekBarRunnable = object : Runnable {
             override fun run() {
@@ -188,7 +188,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
                         binding.incMusicController.tvSongTimer.text =
                             viewModel.formatTime(currentPosition)
 
-                        // Update every 100ms for smooth progress
+
                         updateSeekBarHandler.postDelayed(this, 100)
                     }
                 }
