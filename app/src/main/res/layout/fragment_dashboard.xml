@@ -12,23 +12,23 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSongList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
-
-    <androidx.media3.ui.PlayerControlView
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/player_view"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/fl_music_controller"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:show_buffering="when_playing"
-        app:show_next_button="true"
-        app:show_previous_button="true"
-        app:use_controller="true"
-        app:show_shuffle_button="true"
-        app:show_subtitle_button="true"
-        app:show_vr_button="false" />
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
+
+        <include
+            android:id="@+id/inc_music_controller"
+            layout="@layout/view_music_controller" />
+
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

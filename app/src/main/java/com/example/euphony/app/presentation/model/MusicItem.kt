@@ -10,7 +10,7 @@ data class MusicItem(
     val previewUrl: String,
     val artwork30Url: String,
     val artwork60Url: String,
-    val collectionViewUrl: String,
+    val duration: Long,
 ) {
     companion object {
         fun parseToMusicItem(musicResponse: MusicResponse): MusicItem {
@@ -22,7 +22,7 @@ data class MusicItem(
                 previewUrl = musicResponse.previewUrl ?: "",
                 artwork30Url = musicResponse.artworkUrl30 ?: "",
                 artwork60Url = musicResponse.artworkUrl60 ?: "",
-                collectionViewUrl = musicResponse.trackName ?: ""
+                duration = musicResponse.trackTimeMillis ?: 0
             )
         }
     }
