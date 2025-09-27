@@ -1,11 +1,15 @@
 package com.example.euphony.app.presentation.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.euphony.R
 import com.example.euphony.app.presentation.model.MusicItem
 import com.example.euphony.databinding.ViewMusicItemBinding
 
@@ -45,29 +49,32 @@ class MusicListAdapter(
             binding.apply {
                 tvSongTitle.text = item.musicName
                 tvArtistTitle.text = item.artistName
-//                tvDuration.text = formatDuration(item.duration)
 
-                // Load album art using Glide or Picasso
+                val textColor = if (item.isPlaying) {
+                    ContextCompat.getColor(binding.root.context,R.color.green_500)
+                } else {
+                    ContextCompat.getColor(binding.root.context,R.color.white)
+                }
+                tvSongTitle.setTextColor(textColor)
+
+                lottieAnimationView.isVisible = item.isPlaying
+
 
                 Glide.with(itemView.context)
                     .load(item.artwork30Url)
-//                    .placeholder(R.drawable.ic_music_note)
-//                    .error(R.drawable.ic_music_note)
+                    .placeholder(R.drawable.bg_music_placeholder)
+                    .error(R.drawable.bg_music_placeholder)
+                    .fallback(R.drawable.bg_music_placeholder)
                     .into(ivSong)
 
             }
         }
 
-        private fun formatDuration(duration: Long): String {
-            val minutes = (duration / 1000) / 60
-            val seconds = (duration / 1000) % 60
-            return String.format("%d:%02d", minutes, seconds)
-        }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<MusicItem>() {
         override fun areItemsTheSame(oldItem: MusicItem, newItem: MusicItem): Boolean {
-            return oldItem.musicId == newItem.musicId
+            return oldItem.toString() == newItem.toString()
         }
 
         override fun areContentsTheSame(oldItem: MusicItem, newItem: MusicItem): Boolean {

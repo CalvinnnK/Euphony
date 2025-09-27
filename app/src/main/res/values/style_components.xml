@@ -51,6 +51,13 @@
         <item name="fontFamily">@font/open_sans_regular</item>
     </style>
 
+    <style name="Typography.Label.Medium" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">@dimen/typography_text_size_label_m</item>
+        <item name="lineHeight">@dimen/typography_line_height_label_m</item>
+        <item name="android:fontFamily">@font/open_sans_regular</item>
+        <item name="fontFamily">@font/open_sans_regular</item>
+    </style>
+
     <!-- ========================= -->
     <!--      SEEK BAR       -->
     <!-- ========================= -->

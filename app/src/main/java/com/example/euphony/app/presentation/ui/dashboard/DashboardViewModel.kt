@@ -26,10 +26,16 @@ class DashboardViewModel @Inject constructor(
     val player get() = musicPlayerService.getMusicPlayer()
 
     var isUserSeeking = false
+    var currentMusicList = listOf<MusicItem>()
+
+    fun onStart(){
+        searchMusic("Jack Johnson")
+    }
 
     fun searchMusic(query: String) {
         viewModelScope.launch {
-            repository.getMusicItems(query)
+            val keyword = query.ifEmpty { "Jack Johnson" }
+            repository.getMusicItems(keyword)
                 .onStart {
                     _loading.postValue(Event(true))
                 }
@@ -40,6 +46,7 @@ class DashboardViewModel @Inject constructor(
                 }
                 .collect { musicList ->
                     _loading.postValue(Event(false))
+                    currentMusicList = musicList
                     _musicItems.postValue(Event(musicList))
                 }
 
@@ -48,6 +55,12 @@ class DashboardViewModel @Inject constructor(
 
     fun setListMusic(musicList: List<MusicItem>, autoStart: Boolean = true){
         musicPlayerService.setMusicList(musicList, autoStart)
+    }
+
+    fun onSelectedMusic(item: MusicItem){
+        val jumpToIdx = currentMusicList.indexOf(item)
+        musicPlayerService.setToDefaultPosition(jumpToIdx)
+        musicPlayerService.playMusic()
     }
 
     fun playPlayer(){

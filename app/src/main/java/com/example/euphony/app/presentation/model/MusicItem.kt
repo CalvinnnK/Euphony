@@ -11,7 +11,11 @@ data class MusicItem(
     val artwork30Url: String,
     val artwork60Url: String,
     val duration: Long,
+    val isPlaying: Boolean = false
 ) {
+    override fun toString(): String {
+        return "MusicItem: musicId=$musicId, musicName=$musicName, artistName=$artistName, primaryGenreName=$primaryGenreName, previewUrl=$previewUrl, artwork30Url=$artwork30Url, artwork60Url=$artwork60Url, duration=$duration"
+    }
     companion object {
         fun parseToMusicItem(musicResponse: MusicResponse): MusicItem {
             return MusicItem(
@@ -25,6 +29,7 @@ data class MusicItem(
                 duration = musicResponse.trackTimeMillis ?: 0
             )
         }
+
     }
 }
 

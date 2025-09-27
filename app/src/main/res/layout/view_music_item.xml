@@ -12,35 +12,46 @@
         style="@style/Typography.Paragraph.Small"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginHorizontal="@dimen/margin_large"
         android:text="MEGALODON"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/tv_artist_title"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lottie_animation_view"
         app:layout_constraintStart_toEndOf="@+id/iv_song"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_artist_title"
-        style="@style/Typography.Paragraph.Small"
+        style="@style/Typography.Label.Medium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginHorizontal="@dimen/margin_large"
         android:text="Calvin Harris"
-        android:textColor="@color/white"
+        android:textColor="@color/grey_300"
         app:layout_constraintBottom_toBottomOf="@+id/iv_song"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lottie_animation_view"
         app:layout_constraintStart_toEndOf="@+id/iv_song"
         app:layout_constraintTop_toBottomOf="@+id/tv_song_title" />
 
 
     <ImageView
         android:id="@+id/iv_song"
-        android:src="@drawable/bg_music_placeholder"
         android:layout_width="@dimen/image_album_size_medium"
         android:layout_height="@dimen/image_album_size_medium"
+        android:src="@drawable/bg_music_placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_animation_view"
+        android:layout_width="@dimen/image_size_m"
+        android:layout_height="@dimen/image_size_m"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="wave_audio.lottie"
+        app:lottie_loop="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

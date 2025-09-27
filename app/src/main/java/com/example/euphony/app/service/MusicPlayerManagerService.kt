@@ -74,4 +74,8 @@ class MusicPlayerManagerService @Inject constructor(
         return player.duration
     }
 
+    fun setToDefaultPosition(index: Int){
+        player.seekToDefaultPosition(index)
+    }
+
 }

@@ -2,8 +2,11 @@ package com.example.euphony.app.presentation.ui.dashboard
 
 import android.os.Handler
 import android.os.Looper
+import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.media3.common.Player
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,6 +18,12 @@ import com.example.euphony.app.presentation.ui.base.BaseFragment
 import com.example.euphony.core.utils.EventObserver
 import com.example.euphony.databinding.FragmentDashboardBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
@@ -24,22 +33,31 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
     companion object {
         val TAG get() = "TAG.${DashboardFragment::class.java.simpleName}"
 
+        private const val SEARCH_DELAY_MS = 500L
+        private const val SEEK_BAR_DELAY_MS = 100L
+
         fun newInstance() = DashboardFragment()
     }
 
     private val viewModel: DashboardViewModel by viewModels()
 
     private lateinit var musicAdapter: MusicListAdapter
+
     private var updateSeekBarHandler = Handler(Looper.getMainLooper())
     private var updateSeekBarRunnable: Runnable? = null
+
+    // Coroutine scope for search
+    private val searchScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private var searchJob: Job? = null
 
     override fun initView() {
         setupRecyclerView()
         setupPlayer()
         setupPlayControls()
         setupSeekBar()
+        setupSearchBar()
 
-        viewModel.searchMusic("johnson")
+        viewModel.onStart()
     }
 
     override fun obverseLiveData() {
@@ -47,14 +65,14 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
             musicItems.observe(viewLifecycleOwner, EventObserver {
                 musicAdapter.submitList(it)
 
-                viewModel.setListMusic(it)
+                viewModel.setListMusic(musicList = it, autoStart = false)
             })
         }
     }
 
     private fun setupRecyclerView() {
         musicAdapter = MusicListAdapter { musicItem ->
-            // TODO: Handle item click
+            viewModel.onSelectedMusic(musicItem)
         }
 
         binding.rvSongList.apply {
@@ -112,7 +130,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: androidx.media3.common.MediaMetadata) {
-                // Update UI when track changes
                 updateTrackInfo(mediaMetadata)
             }
 
@@ -215,11 +232,62 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
 
     private fun updateTrackInfo(mediaMetadata: androidx.media3.common.MediaMetadata) {
         binding.incMusicController.apply {
+            val updatedList = viewModel.currentMusicList.map { musicItem ->
+                musicItem.copy(isPlaying = musicItem.musicName == mediaMetadata.title?.toString() && musicItem.artistName == mediaMetadata.artist?.toString())
+            }
+
+            // Update ViewModel state
+            viewModel.currentMusicList = updatedList
+
+            // Update adapter
+            musicAdapter.submitList(updatedList)
+
+
             tvSongTitle.text = mediaMetadata.title?.toString() ?: "Unknown Title"
             tvSongArtistName.text = mediaMetadata.artist?.toString() ?: "Unknown Artist"
 
             mediaMetadata.artworkUri?.let { artworkUri ->
-                Glide.with(requireContext()).load(artworkUri).into(ivAlbum)
+                Glide.with(requireContext())
+                    .load(artworkUri)
+                    .placeholder(R.drawable.bg_music_placeholder)
+                    .error(R.drawable.bg_music_placeholder)
+                    .fallback(R.drawable.bg_music_placeholder)
+                    .into(ivAlbum)
+            }
+        }
+    }
+
+    private fun setupSearchBar() {
+        binding.incSearchBar.apply {
+            etSearch.addTextChangedListener { editable ->
+                val searchQuery = editable.toString().trim()
+                if (searchQuery.isNotEmpty()) {
+                    ivClearSearch.visibility = View.VISIBLE
+                } else {
+                    ivClearSearch.visibility = View.GONE
+                }
+
+                // Cancel previous search if user is still typing
+                searchJob?.cancel()
+
+                // Schedule new search after 0.5 seconds
+                searchJob = searchScope.launch {
+                    delay(SEARCH_DELAY_MS)
+                    viewModel.searchMusic(searchQuery)
+                }
+            }
+
+            etSearch.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    viewModel.searchMusic(etSearch.text.toString())
+                    true
+                } else {
+                    false
+                }
+            }
+
+            ivClearSearch.setOnClickListener {
+                etSearch.text.clear()
             }
         }
     }
