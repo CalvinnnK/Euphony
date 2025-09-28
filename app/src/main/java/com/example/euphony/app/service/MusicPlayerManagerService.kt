@@ -62,7 +62,7 @@ class MusicPlayerManagerService @Inject constructor(
         return player.playbackState
     }
 
-    fun getPlayerPosition(): Long{
+    fun getPlayerPositionTime(): Long{
         return player.currentPosition
     }
 
@@ -78,4 +78,7 @@ class MusicPlayerManagerService @Inject constructor(
         player.seekToDefaultPosition(index)
     }
 
+    fun getCurrentMediaItemIndex(): Int{
+        return player.currentMediaItemIndex
+    }
 }

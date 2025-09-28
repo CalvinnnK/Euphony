@@ -107,7 +107,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
                         binding.incMusicController.btnPlay.setImageResource(R.drawable.ic_control_play)
                         stopSeekBarUpdate()
                         binding.incMusicController.seekBar.progress = 0
-                        binding.incMusicController.tvSongTimer.text = "00:00"
+                        binding.incMusicController.tvSongTimer.text =
+                            getString(R.string.lbl_timer_null)
                     }
 
                     Player.STATE_BUFFERING -> {
@@ -206,7 +207,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding>(
                             viewModel.formatTime(currentPosition)
 
 
-                        updateSeekBarHandler.postDelayed(this, 100)
+                        updateSeekBarHandler.postDelayed(this, SEEK_BAR_DELAY_MS)
                     }
                 }
             }

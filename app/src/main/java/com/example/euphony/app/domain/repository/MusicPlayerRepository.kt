@@ -4,5 +4,5 @@ import com.example.euphony.app.data.model.MusicResponse
 import kotlinx.coroutines.flow.Flow
 
 interface MusicPlayerRepository {
-    fun getMusicItems(term: String): Flow<List<MusicResponse>>
+    fun getMusicItems(term: String, limit: Int = 20): Flow<List<MusicResponse>>
 }

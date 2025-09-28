@@ -10,6 +10,7 @@ import com.example.euphony.app.service.MusicPlayerManagerService
 import com.example.euphony.core.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,74 +29,79 @@ class DashboardViewModel @Inject constructor(
     var isUserSeeking = false
     var currentMusicList = listOf<MusicItem>()
 
-    fun onStart(){
+    fun onStart() {
         searchMusic("Jack Johnson")
     }
 
-    fun searchMusic(query: String) {
+    fun searchMusic(query: String, limit: Int = 20) {
         viewModelScope.launch {
             val keyword = query.ifEmpty { "Jack Johnson" }
-            repository.getMusicItems(keyword)
+            repository.getMusicItems(keyword, limit)
                 .onStart {
-                    _loading.postValue(Event(true))
+                    _loading.value = Event(true)
                 }
                 .map { responseList ->
                     responseList.map { musicResponse ->
                         MusicItem.parseToMusicItem(musicResponse)
                     }
                 }
-                .collect { musicList ->
-                    _loading.postValue(Event(false))
-                    currentMusicList = musicList
-                    _musicItems.postValue(Event(musicList))
+                .onCompletion {
+                    _loading.value = Event(false)
                 }
-
+                .collect { musicList ->
+                    currentMusicList = musicList
+                    _musicItems.value = Event(musicList)
+                }
         }
     }
 
-    fun setListMusic(musicList: List<MusicItem>, autoStart: Boolean = true){
+    fun setListMusic(musicList: List<MusicItem>, autoStart: Boolean = true) {
         musicPlayerService.setMusicList(musicList, autoStart)
     }
 
-    fun onSelectedMusic(item: MusicItem){
+    fun onSelectedMusic(item: MusicItem) {
         val jumpToIdx = currentMusicList.indexOf(item)
         musicPlayerService.setToDefaultPosition(jumpToIdx)
         musicPlayerService.playMusic()
     }
 
-    fun playPlayer(){
+    fun playPlayer() {
         musicPlayerService.playMusic()
     }
 
-    fun pausePlayer(){
+    fun pausePlayer() {
         musicPlayerService.pauseMusic()
     }
 
-    fun skipToNextPlayer(){
+    fun skipToNextPlayer() {
         musicPlayerService.skipToNext()
     }
 
-    fun skipToPreviousPlayer(){
+    fun skipToPreviousPlayer() {
         musicPlayerService.skipToPrevious()
     }
 
-    fun isPlayerPlaying(): Boolean{
+    fun isPlayerPlaying(): Boolean {
         return musicPlayerService.isPlaying()
     }
 
-    fun setPositionPlayer(position: Long){
+    fun setPositionPlayer(position: Long) {
         musicPlayerService.setPositionPlayer(position)
     }
 
-    fun getPlayerState():Int{
+    fun getPlayerState(): Int {
         return musicPlayerService.getPlayerState()
     }
 
-    fun getPlayerPosition(): Long{
-        return musicPlayerService.getPlayerPosition()
+    fun getPlayerPosition(): Long {
+        return musicPlayerService.getPlayerPositionTime()
     }
-    fun getPlayerDuration(): Long{
+
+    fun getPlayerDuration(): Long {
         return musicPlayerService.getPlayerDuration()
+    }
+    fun getCurrentMediaItemIndex(): Int {
+        return musicPlayerService.getCurrentMediaItemIndex()
     }
 
     fun formatTime(currentPosition: Long): String {

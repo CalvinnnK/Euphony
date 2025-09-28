@@ -10,6 +10,7 @@ interface ApiMusicService {
     @GET("search")
     suspend fun searchMusic(
         @Query("term") term: String = "",
+        @Query("limit") limit: Int = 20,
         @Query("entity") entity: String = "song",
     ): SearchResponse<MusicResponse>
 

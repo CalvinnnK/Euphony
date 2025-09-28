@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Euphony</string>
     <string name="lbl_search_songs">Search songs...</string>
+    <string name="lbl_timer_null">00:00</string>
 </resources>

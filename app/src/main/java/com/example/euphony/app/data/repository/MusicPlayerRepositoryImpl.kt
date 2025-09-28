@@ -12,7 +12,7 @@ import javax.inject.Inject
 class MusicPlayerRepositoryImpl @Inject constructor(
     private val apiMusicService: ApiMusicService
 ): MusicPlayerRepository {
-    override fun getMusicItems(term: String): Flow<List<MusicResponse>> = flow {
+    override fun getMusicItems(term: String, limit: Int): Flow<List<MusicResponse>> = flow {
         try {
             val response = apiMusicService.searchMusic(term = term)
             emit(response.results ?: emptyList())
