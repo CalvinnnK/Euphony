@@ -1,4 +1,4 @@
-package com.example.euphony
+package com.example.euphony.app.presentation.ui.dashboard
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
@@ -6,10 +6,9 @@ import androidx.media3.common.Player
 import com.example.euphony.app.data.model.MusicResponse
 import com.example.euphony.app.domain.repository.MusicPlayerRepository
 import com.example.euphony.app.presentation.model.MusicItem
-import com.example.euphony.app.presentation.ui.dashboard.DashboardViewModel
 import com.example.euphony.app.service.MusicPlayerManagerService
 import com.example.euphony.core.utils.Event
-import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -211,7 +210,7 @@ class DashboardViewModelTest {
         // Arrange
         val query = "Jack Johnson"
         val fakeResponse = listOf(createJackJohnsonMusicResponse())
-        val expectedMusicItems = fakeResponse.map { MusicItem.parseToMusicItem(it) }
+        val expectedMusicItems = fakeResponse.map { MusicItem.Companion.parseToMusicItem(it) }
 
         every { repository.getMusicItems(any()) } returns flowOf(fakeResponse)
 
@@ -223,7 +222,7 @@ class DashboardViewModelTest {
         verify { repository.getMusicItems(query) }
 
         // Assertion for the music list
-        assertThat(viewModel.currentMusicList).isEqualTo(expectedMusicItems)
+        Truth.assertThat(viewModel.currentMusicList).isEqualTo(expectedMusicItems)
     }
 
     @Test
@@ -231,7 +230,8 @@ class DashboardViewModelTest {
         // Arrange
         val defaultKeyword = "Jack Johnson"
         val defaultResponse = listOf(createJackJohnsonMusicResponse())
-        val expectedMusicItems = listOf(createJackJohnsonMusicResponse()).map { MusicItem.parseToMusicItem(it) }
+        val expectedMusicItems =
+            listOf(createJackJohnsonMusicResponse()).map { MusicItem.Companion.parseToMusicItem(it) }
 
         every { repository.getMusicItems(defaultKeyword) } returns flowOf(defaultResponse)
 
@@ -242,14 +242,14 @@ class DashboardViewModelTest {
         // Assert
         verify { repository.getMusicItems(defaultKeyword) }
 
-        assertThat(viewModel.currentMusicList).isEqualTo(expectedMusicItems)
+        Truth.assertThat(viewModel.currentMusicList).isEqualTo(expectedMusicItems)
     }
 
     @Test
     fun `set new music list, should call service setMusicList`() {
         // Arrange
-        val musicList = createJackJohnsonMusicList().map { MusicItem.parseToMusicItem(it) }
-        every{musicPlayerService.setMusicList(musicList, false)} returns Unit
+        val musicList = createJackJohnsonMusicList().map { MusicItem.Companion.parseToMusicItem(it) }
+        every { musicPlayerService.setMusicList(musicList, false) } returns Unit
 
         //Act
         viewModel.setListMusic(musicList, false)
@@ -262,7 +262,7 @@ class DashboardViewModelTest {
     fun `onSelectedMusic, should seek to correct index and play`() {
         // Arrange
         val expectedPosition = 1
-        val musicList = createJackJohnsonMusicList().map { MusicItem.parseToMusicItem(it) }
+        val musicList = createJackJohnsonMusicList().map { MusicItem.Companion.parseToMusicItem(it) }
         viewModel.currentMusicList = musicList
         val selectedItem = musicList[expectedPosition]
 
@@ -277,7 +277,7 @@ class DashboardViewModelTest {
         // Assert
         verify { musicPlayerService.setToDefaultPosition(expectedPosition) }
         verify { musicPlayerService.playMusic() }
-        assertThat(currentIndex).isEqualTo(expectedPosition)
+        Truth.assertThat(currentIndex).isEqualTo(expectedPosition)
     }
 
     @Test
@@ -295,7 +295,7 @@ class DashboardViewModelTest {
     @Test
     fun `pausePlayer, should call service pauseMusic`() {
         // Arrange
-        every {musicPlayerService.pauseMusic()} returns Unit
+        every { musicPlayerService.pauseMusic() } returns Unit
 
         // Act
         viewModel.pausePlayer()
@@ -307,7 +307,7 @@ class DashboardViewModelTest {
     @Test
     fun `skipToNextPlayer, should call service skipToNext`() {
         // Arrange
-        every {musicPlayerService.skipToNext()} returns Unit
+        every { musicPlayerService.skipToNext() } returns Unit
 
         // Act
         viewModel.skipToNextPlayer()
@@ -319,7 +319,7 @@ class DashboardViewModelTest {
     @Test
     fun `skipToPreviousPlayer, should call service skipToPrevious`() {
         // Arrange
-        every {musicPlayerService.skipToPrevious()} returns Unit
+        every { musicPlayerService.skipToPrevious() } returns Unit
 
         // Act
         viewModel.skipToPreviousPlayer()
@@ -338,7 +338,7 @@ class DashboardViewModelTest {
         val actualIsPlaying = viewModel.isPlayerPlaying()
 
         // Assert
-        assertThat(actualIsPlaying).isEqualTo(isPlaying)
+        Truth.assertThat(actualIsPlaying).isEqualTo(isPlaying)
     }
 
     @Test
@@ -351,7 +351,7 @@ class DashboardViewModelTest {
         val actualState = viewModel.getPlayerState()
 
         // Assert
-        assertThat(actualState).isEqualTo(playerState)
+        Truth.assertThat(actualState).isEqualTo(playerState)
     }
 
     @Test
@@ -364,7 +364,7 @@ class DashboardViewModelTest {
         val actualPosition = viewModel.getPlayerPosition()
 
         // Assert
-        assertThat(actualPosition).isEqualTo(musicPlayerService.getPlayerPositionTime())
+        Truth.assertThat(actualPosition).isEqualTo(musicPlayerService.getPlayerPositionTime())
     }
 
     @Test
@@ -377,7 +377,7 @@ class DashboardViewModelTest {
         val actualDuration = viewModel.getPlayerDuration()
 
         // Assert
-        assertThat(actualDuration).isEqualTo(musicPlayerService.getPlayerDuration())
+        Truth.assertThat(actualDuration).isEqualTo(musicPlayerService.getPlayerDuration())
     }
 
     // --- Tests for pure functions ---
@@ -385,18 +385,18 @@ class DashboardViewModelTest {
     @Test
     fun `formatTime with positive value, should return correct MM_SS string`() {
         val formattedTime = viewModel.formatTime(95000L) // 1 minute 35 seconds
-        assertThat("01:35").isEqualTo(formattedTime)
+        Truth.assertThat("01:35").isEqualTo(formattedTime)
     }
 
     @Test
     fun `formatTime with zero, should return '00_00'`() {
         val formattedTime = viewModel.formatTime(0L)
-        assertThat("00:00").isEqualTo(formattedTime)
+        Truth.assertThat("00:00").isEqualTo(formattedTime)
     }
 
     @Test
     fun `formatTime with negative value, should return '00_00'`() {
         val formattedTime = viewModel.formatTime(-100L)
-        assertThat("00:00").isEqualTo(formattedTime)
+        Truth.assertThat("00:00").isEqualTo(formattedTime)
     }
 }

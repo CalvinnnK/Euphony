@@ -1,6 +1,5 @@
 package com.example.euphony.app.presentation.ui.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat

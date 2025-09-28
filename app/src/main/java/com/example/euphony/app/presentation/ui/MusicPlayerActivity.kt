@@ -1,6 +1,5 @@
 package com.example.euphony.app.presentation.ui
 
-import android.os.Bundle
 import com.example.euphony.app.presentation.ui.base.BaseActivity
 import com.example.euphony.app.presentation.ui.navigation.MusicPlayerNavigation
 import com.example.euphony.databinding.ActivityMusicPlayerBinding
