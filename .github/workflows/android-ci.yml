@@ -2,6 +2,8 @@ name: Android CI/CD
 
 on:
   push:
+    tags:
+      - 'v*.*.*'
     branches: [ "master", "main" ]
 
 jobs:
@@ -56,3 +58,21 @@ jobs:
         with:
           name: app-release.apk
           path: app/build/outputs/apk/release/app-release.apk
+  release:
+    # It depends on the 'build' job finishing successfully.
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download APK from build
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref }}
+          body: "New release based on commit ${{ github.sha }}"
+          files: app-release.apk
